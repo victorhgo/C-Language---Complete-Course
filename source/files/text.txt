@@ -1,0 +1,9 @@
+Hello, this is a text file.
+
+    It's purposes are:
+
+    1 - Testing some functions as well some printing options
+    2 - Numbers and symbols: 123456789!@#$%ˆ&*()
+    3 - Also some punctuations: ão, é, •o•, :D
+
+Bye bye :-)
