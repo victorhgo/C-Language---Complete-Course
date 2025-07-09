@@ -1544,5 +1544,227 @@ main(){
 
 Structures, or _structs_ in C are data structures where we can store data with different types. We are going to see _unions_, _enums_ and _typedef_ in C
 
-Structures are data sets where we can store different types of data and access them with a common element.
+Structures are data sets where we can store different types of data and access them with a common element, here's the structure's syntax in C:
+
+```C
+struct tagName {
+   type member1;
+   type member2;
+};
+```
+
+The _tagName_ is optional in some contexts, for instance when the structure has only one variable, or referral.
+
+We can initialize a struct by defining it's tagName, variables and referrals like the struct customer:
+
+```C
+/* This is a variable, type struct customer */
+
+struct customer{
+    char name[10];
+    char address[50];
+    char city[30];
+    char phone[20];
+    int postal;
+}infos ; /* Structure's variable */
+
+/* Other way of doing this */
+struct customer infos;
+
+infos.postal = 12345;
+
+printf("Customer's postal code is %d\n", infos.postal);
+
+/* We can also function gets() to store value inside a variable like */
+printf("Enter customer's name >>> ");
+gets(infos.name);
+
+printf("Welcome, %s\n", infos.name);
+
+...
+```
+
+Now we can work with all variables inside it using the struct variable and an operator called _dot ._. For instance, we want to store the integer postal code, we could do it by:
+
+```C
+main(){
+    infos.postal;
+}
+```
+
+We can have different referrals to the structure, using the customer as example:
+
+```C
+/* This is a variable, type struct customer */
+struct customer{
+    char name[10];
+    char address[50];
+    char city[30];
+    char phone[20];
+    int postal;
+}infos, data, information ; /* Structure's variable - referral */
+```
+
+We can also pass elements to a function in the same way as any other variable, only remember to use the dot operator:
+
+```C
+struct test{
+    float alpha;
+    int beta;
+    char delta[10];
+}theta;
+
+/* We will pass the element alpha to the function1 */
+function1(theta.alpha);
+
+/* But if we want to work with the addresses */
+function(&theta.beta);
+function2(&theta.alpha);
+function3(theta.delta); /* Because delta is a vector */
+```
+
+One example at _/structures/clock.c_ we will work to pass more than 1 structure to a function. But the syntax is:
+
+```C
+type function(struct tagName variable);
+```
+
+#### Declaring a pointer to a structure
+
+We can declare a pointer to a structure in the two following ways:
+
+```C
+struct tagName {
+   type member1;
+   type member2;
+} *pointer;
+
+/* Or we could do it like: */
+struct tagName {
+   type member1;
+   type member2;
+};
+
+struct tagName *pointer;
+```
+
+Why is it important to access struct's content using pointers? When we are passing data from struct to function, we can pass the struct's address instead of complete struct, this gives us more processing speed, saving processing time when processing or refreshing data for this structure.
+
+When working with pointers to structures, we will use a new operator in C, the arrow pointer _->_ in this way:
+
+```C
+struct tagName {
+   type member1;
+   type member2;
+} referralName;
+
+struct tagName *pointer;
+
+main(){
+    pointer = &referralName;
+
+    pointer->member1 = data;
+
+    printf("%s", pointer->member1); /* Would print the data stored in member1 */
+
+}
+```
+
+Another syntax instead of the _->_ operator would be the following example, but it's not elegant and can cause some confusion when reading the source code.
+
+```C
+struct tagName {
+   type member1;
+   type member2;
+} referralName;
+
+struct tagName *pointer;
+
+main(){
+    pointer = &referralName;
+
+    (*pointer).member1 = data;
+
+    printf("%s", (*pointer).member1); /* Would print the data stored in member1 */
+
+}
+```
+
+> More examples at at _/structures/structPointers1.c_...
+
+A function that would receive a pointer as parms would have the following syntax:
+
+```C
+type function(struct tagName *pointer);
+```
+
+#### Unions in C
+
+_Unions_ are like structures, they even follow the same syntax, but unions are variable's groups with different types that will share the same address. Syntax:
+
+```C
+union tagName{
+    type value1;
+    type value2;
+} referral;
+```
+
+We can write more efficient programs using unions specially when writing to files since all the data will occupy the same address.
+
+> Note: I won't go that deep right now into unions but there's an example at _/structures/unions.c_ that shows how to deal with them
+
+#### Enumeration (enum) in C
+
+Enumeration is a special type that represents a group of *constants*, where each declared symbols represents an *integer value*.
+
+Enum is declared in the following syntax:
+
+```C
+enum level {
+    low,    /* It will be assigned the value 0 */
+    medium, /* 1 */
+    high    /* 2 ... */
+} temperature;
+
+/* It also can be declared as */
+enum level {low, medium, high};
+```
+
+They are useful when we want to group a set list for instance, so the code can be more friendly and readable, in a _switch_ statement for instance:
+
+```C
+switch(temperature){
+    case low: turnoffAC(); break;
+    case medium: openWindow(); break;
+    case high: turnonAC(); break;
+} /* End switch */
+```
+
+Example at _/structures/enum.c_...
+
+#### Typedef - define new types in C
+
+A method to define new types in C is _typedef_ where we can use it with _structs_, _unions_, _enum_ and even simpler C types. 
+
+For instance: we know that real is the set of all numbers, so we can store every real as a float in C. We can define a type called real to declare float numbers:
+
+```C
+typedef float real;
+
+main(){
+    real pi; /* define pi as a real number */
+
+    pi = 3.1415; /* Store pi with it's 4 first digits */
+    printf("%.4f\n", pi);
+}
+```
+
+Typedef is good for portability between different machines since each architecture can have different values for each type.
+
+> Exercise: Implement the customer sign up program to study further concepts like nested structures.
+
+## Bit to bit operations and bits fields
+
+
+
 
