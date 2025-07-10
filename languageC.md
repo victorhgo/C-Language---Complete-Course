@@ -9,6 +9,8 @@
 - [Argument passing in C and Recursion](#page5)
 - [Files in C](#page6)
 - [Structures in C](#page7)
+- [Bit to bit operations and bit fields](#page8)
+- [Dynamic Memory Allocation](#page9)
 
 ---
 ##### by Victor Correa
@@ -495,9 +497,8 @@ $ man make
 ```
 
 <a id="page3"></a>
-## Vectors and Matrices
 
-### Vectors - v[]
+## Vectors and Matrices
 
 Vectors can be accessed using the index of data, for instance the vector with the 10 first integers from 0 to 9:
 
@@ -692,6 +693,7 @@ C offers a library _string.h_ with a lot of useful functions to deal with string
 *Exercise from 7.5 - Write a interpreter for some instructions*
 
 <a id="page4"></a>
+
 ## Pointers
 
 Pointers are fundamental variables in C for more efficient programs since they point to a variable's memory address,  allowing us to access the hardware memory address, dynamic memory allocation. By doing that we can manipulate data directly from the computer's memory.
@@ -1151,7 +1153,7 @@ There's no limit for multiple indirection, so you can declare a pointer for a po
 
 We can use argument passing in C for functions, how can we modify a variable's value and how to use argument passing thru the command line where we can pass the arguments to the main function and recursion, where a function calls itself helping to execute successive calculations without the need for iterations.
 
-### Argument passing to a function by value
+## Argument passing to a function by value
 
 When we pass an argument by value, we are sending a variable's value copy for the function, for instance:
 
@@ -1318,7 +1320,9 @@ int stringSize(const char *string){
 > Exercise: Write a recursive function that will print numbers from 1 to $n$ where $n$ is the given number.
 
 <a id="page6"></a>
+
 ## Files in C
+
 One of the most important topics since C offers a lot of resources and functions to manipulate files, where we can store and access data for our programs, also access other Operating System's files to develop better applications and softwares.
 
 For C, files are just a sequential collection of bytes (also know as _stream_) where even a line is a character.
@@ -1540,6 +1544,7 @@ main(){
 !!! S SECTION NOT READY
 
 <a id="page7"></a>
+
 ## Structures in C
 
 Structures, or _structs_ in C are data structures where we can store data with different types. We are going to see _unions_, _enums_ and _typedef_ in C
@@ -1763,8 +1768,152 @@ Typedef is good for portability between different machines since each architectu
 
 > Exercise: Implement the customer sign up program to study further concepts like nested structures.
 
+<a id="page8"></a>
+
 ## Bit to bit operations and bits fields
 
+C language allows us to work in low levels working with the hardware itself. bit wise, bit to bit, bit field (for systems with low memory)... develop further
 
+#### Operators to manipulate bits
 
+_not_ operator that complements the bit, on the register below:
 
+```C
+unsigned char reg1 = 0x80; /* bin: 1000 0000*/
+
+/* Operators to manipulate bits in C */
+reg1 = ~reg1; /* 7F - 0111 1111 */
+```
+
+_shift right_ shifting to right _>>_: 
+
+```C
+/* Another operator - shift right >> shift_times */
+
+reg1 = reg1 >> 1; /* Will shift from 0111 1111 to 0011 1111*/
+printf("After shifting right 1 time: %.2X\n", reg1);
+```
+
+_shift left_ shifting to left _<<_: 
+
+_AND_, _OR_ and _XOR_:
+
+For a _XOR_ output to be True, the amount of True inputs must be *odds*
+
+!!!!! FINISH THIS
+
+A function to print binary:
+
+```C
+void printBin(unsigned char reg){
+
+    for (int i = 7; i >= 0; i--){
+        (reg>>i) & 1 ? putchar('1') : putchar('0');
+    } /* End for */
+
+    printf("bin\n");
+}
+```
+> Exercise: Explain the function above
+
+(reg>>i) & 1 - bits mask
+
+#### Bits mask
+
+Operators bit to bit can be used in the bits mask concept, we use it when we want to keep/remove, concatenate or invert punctual bits
+
+!!!! D Develop more too
+
+##### Concatenating bits 
+
+!!!! D Develop more too
+
+#### Bits field
+
+Bits fields are an extension for structs and it can be used when mapping registers on microcontrollers or displaying information in a single bit in the program, it's syntax:
+
+```C
+struct reg{
+    unsigned name : size_in_bits;
+    .
+    .
+    .
+} regist;
+```
+
+Unsigned because it's an integer with no signal
+: operator 
+
+!!!! R Revise too
+
+> Do the exercise after revision
+
+<a id="page9"></a>
+
+## Dynamic Memory Allocation
+
+Dynamic Memory Allocation can help us when working with higher amount of data, it reservers the necessary space in memory during the execution for the current application. This approach is better than allocating a bigger amount of memory for a vector for instance, by declaring it bigger than it needs to be. 
+
+If you need a char vector but you don't know exactly the size of it, it could be 10 bytes or 1000 bytes. Usually it would be declared a big one like _vector[1000]_, but this approach is not good because either this space will never be used or it might get full and overflow the memory.
+
+To deal with cases like that, C allows the programmer to dynamically allocate the memory during the program's execution, increasing the size when needed or freeing it when not needed anymore.
+
+The first function to work with these cases is the _malloc()_ function from _stdlib_, which means _memory allocation_. The _malloc()_ function allocates size bytes of memory and returns a pointer to the allocated memory. It's syntax is:
+
+```C
+void *malloc(size_t size);
+```
+
+Where size_t is usually defined by _unsigned int_ on the _stdlib.h_ library by a _typedef_. The function _malloc_ creates a block _size_ with _n bytes_ and returns a pointer to this block. If the allocation fails, the function returns _NULL_.
+
+Free function ...
+
+Memory allocation is also good when reading files and doing a processing from them because the program can allocate the sufficient memory amount to deal with it.
+
+Another resource when working with memory allocation is the _calloc()_ function. The _calloc()_ function contiguously allocates enough space for _count_ objects that are _size_ bytes of memory each and returns a pointer to the allocated memory.  The allocated memory is filled with bytes of value zero. It's syntax is:
+
+```C
+void *calloc(size_t count, size_t size);
+```
+
+Where it will allocate a memory amount equal the product of _count_ and _size_ (_count_ x _size_).
+
+The below function returns a pointer to a vector of _amount_ x _long_:
+
+```C
+long *vectorLong(unsigned amount){
+    long *palloc;
+
+    palloc = calloc(amount, sizeof(long));
+
+    if(!palloc){
+        printf("Insufficient Memory\n");
+        exit(1);
+    }
+
+    return palloc;
+} /* End function */
+```
+
+Another resource is _realloc()_ function (reallocation function). This function tries to change the memory size that was allocated previously and pointed by _pointer_ for the _size_ type. It will return a pointer to the memory block, and it can move this block to increase size. If _pointer_ is _NULL_, _realloc_ will return a pointer to the allocated memory. If _size_ is 0, the memory pointed by _pointer_ will be free. It's syntax is:
+
+```C
+void *realloc(void *pointer, size_t size);
+```
+
+The code in _/memory allocation/reallocExample.c_ is used when trying to reallocate space to concatenate two strings.
+
+> Exercise: Write a binary reader that shows in the screen all bytes organized in the screen. This bytes vector to show the content must be dynamically allocated. The display should be like:
+
+```sh
+00 01 02 03 04 05 06 07 08 09
+-- -- -- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- -- -- --
+...
+```
+
+All other dynamic memory allocations functions can be found in the _malloc.h_ library.
+
+## windows.h library for software development in Windows - look for Mac and Linux libraries (MacWindows.h)
+
+## Pausing theoretical part, will focus on exercises now and finish the files and bit to bit sessions!
