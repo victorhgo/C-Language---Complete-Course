@@ -1772,11 +1772,21 @@ Typedef is good for portability between different machines since each architectu
 
 ## Bit to bit operations and bits fields
 
-C language allows us to work in low levels working with the hardware itself. bit wise, bit to bit, bit field (for systems with low memory)... develop further
+Due to its abstraction levels, C language also allows us to work with the hardware itself by manipulating bits in the memory, operations like bit wise, bit to bit, bit field (for systems with low memory) approximate us very closely to machine language. These resources are very useful when working with low level programming, specially microcontrollers or projects where we need to manipulate processor registers. Some bit operations are:
+
+
+| **Operator** |                **Description**               |
+|:------------:|:--------------------------------------------:|
+|       ~      |         Bits inversion - 0 to 1 and 1 to 0   |
+|      >>      |         Shift Right                          |
+|      <<      |         Shift Left                           |
+|       &      |         AND Operator (bit to bit)            |
+|       ^      |         XOR Operator  (bit to bit)           |
+|       |      |         OR Operator (bit to bit)             |
 
 #### Operators to manipulate bits
 
-_not_ operator that complements the bit, on the register below:
+Bits inversion: _~_ operator that complements the bit, on the register below:
 
 ```C
 unsigned char reg1 = 0x80; /* bin: 1000 0000*/
@@ -1785,7 +1795,7 @@ unsigned char reg1 = 0x80; /* bin: 1000 0000*/
 reg1 = ~reg1; /* 7F - 0111 1111 */
 ```
 
-_shift right_ shifting to right _>>_: 
+_Shift right_ shifting all bits to right _>>_: 
 
 ```C
 /* Another operator - shift right >> shift_times */
@@ -1794,29 +1804,126 @@ reg1 = reg1 >> 1; /* Will shift from 0111 1111 to 0011 1111*/
 printf("After shifting right 1 time: %.2X\n", reg1);
 ```
 
-_shift left_ shifting to left _<<_: 
-
-_AND_, _OR_ and _XOR_:
-
-For a _XOR_ output to be True, the amount of True inputs must be *odds*
-
-!!!!! FINISH THIS
-
-A function to print binary:
+_Shift left_ shifting all bits to left _<<_: 
 
 ```C
-void printBin(unsigned char reg){
+/* Another operator - shift right >> shift_times */
 
-    for (int i = 7; i >= 0; i--){
-        (reg>>i) & 1 ? putchar('1') : putchar('0');
+reg1 = reg1 << 1; /* Will shift from 0111 1111 to 0011 1111*/
+printf("After shifting left 1 time: %.2X\n", reg1);
+```
+
+_AND_ operation _&_:
+
+```C
+unsigned char reg1 = 0x27; /* 0010 0111 */
+              reg2 = 0x64, /* 0110 0100 */
+              reg3;
+
+/* AND Operation & */
+reg3 = reg1 & reg2; /* 27 AND 64 = 24hex */
+
+/* AND Operation: 27 = 0010 0111
+                  64 = 0110 0100
+             27 & 24 = 0010 0100  = 24hex */
+
+printf("Reg1 & Reg2 = %.2X\n", reg3); /* Will print 24hex */
+```
+
+_OR_ operation _|_:
+
+```C
+unsigned char reg1 = 0x27; /* 0010 0111 */
+              reg2 = 0x64, /* 0110 0100 */
+              reg3;
+
+/* OR Operation | */
+reg3 = reg1 | reg2; /* 27 OR 64 = 67hex */
+
+/* OR  Operation: 27 = 0010 0111
+                  64 = 0110 0100
+             27 | 24 = 0110 0111  = 67hex */
+
+printf("Reg1 | Reg2 = %.2X\n", reg3); /* Will print 67hex */
+```
+
+_XOR_ (exclusive OR) operation _^_. Not that for a _XOR_ output to be True, the amount of True inputs must be *odds*, in this case where true inputs are equal to _1_ (odd):
+
+```C
+unsigned char reg1 = 0x27; /* 0010 0111 */
+              reg2 = 0x64, /* 0110 0100 */
+              reg3;
+
+/* XOR - Exclusive OR ^*/
+reg3 = reg1 ^ reg2;
+
+/* XOR Operation: 27 = 0010 0111
+                  64 = 0110 0100
+             27 | 24 = 0100 0011  = 43hex */
+
+printf("Reg1 ^ Reg2: %.2X\n", reg3); /* Will print 43hex */
+```
+
+Below there is a function to print binary numbers. This is very useful when working with bits, to verify what's happening on each operations:
+
+```C
+void printBin(unsigned char register1){
+
+    for (register int i = 7; i >= 0; i--){
+        /* Bit mask - (reg>>i) & 1 */
+        (register1>>i) & 1 ? putchar('1') : putchar('0');
+
     } /* End for */
 
     printf("bin\n");
-}
-```
-> Exercise: Explain the function above
 
-(reg>>i) & 1 - bits mask
+} /* End function printBin */
+```
+
+The _printBin()_ function receives a byte (unsigned char register) and prints it in binary format. How it works?
+
+Since _1 byte = 8 bits_, the function does a _shift right_ times _i_ from _i = 7_ until _i = 0_, in the following way:
+
+```sh
+enter register = A5hex (in bin: 1010 0101)
+
+i = 7; shiftright >> 7:
+1010 0101 (>>7) 0000 0001
+1 & '1' - true: putchar('1') = 1
+
+i = 6; shiftright >> 6:
+1010 0101 (>>6) 0000 0010
+0 & '1' - false: putchar('0') = 0
+
+i = 5; shiftright >> 5:
+1010 0101 (>>5) 0000 0101
+1 & '1' - true: putchar('1') = 1
+
+i = 4; shiftright >> 4:
+1010 0101 (>>4) 0000 1010
+0 & '1' - false: putchar('0') = 0
+
+i = 3; shiftright >> 3:
+1010 0101 (>>3) 0001 0100
+0 & '0' - false: putchar('0') = 0
+
+i = 2; shiftright >> 2:
+1010 0101 (>>2) 0010 1001
+1 & 1 - true: putchar('1') = 1
+
+i = 1; shiftright >> 1:
+1010 0101 (>>1) 0101 0010
+0 & 1 - false: putchar('0') = 0
+
+i = 0; shiftright >> 0:
+1010 0101 (>>0) 1010 0101
+1 & 1 - true: putchar('1') = 1
+
+Result:
+1010 0101bin = A5hex
+```
+
+The function works with bits mask in the form of (reg>>i) & 1.
 
 #### Bits mask
 
