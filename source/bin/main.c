@@ -1,64 +1,60 @@
-/* Reads a binary file and follow this structure, displaying HEX and also the file size
+/* main.c */
 
-00 01 02 03 04 05 06 07 08 09
--- -- -- -- -- -- -- -- -- --
--- -- -- -- -- -- -- -- -- --
--- -- -- -- -- -- -- -- -- --
-...
-File size: -- bytes
-
-The bytes vector should be dynamically allocated
-*/
+/* includes */
 #include <stdio.h>
 #include <stdlib.h>
+#include "functions.h"
+
+/* Defines */
+#define OPENFILE fopen("copy.bin", "rb")
+#define ERROR_R system( "read -n 1 -s -p \"Press any key to continue...\"" )
+#define EXIT_ERR exit(1);
+
+/* typedefs */
+typedef unsigned long int bytes;
+typedef char bin;
+typedef unsigned char byte;
 
 /* main function */
-int main(){
+int main(int argc, char *argv[]){
+    
     FILE *binaryFile;
 
     /* This pointer will point to the binary file */
-    unsigned char *binPointer;
+    byte *binPointer;
 
     /* Will store the file's size (in bytes)*/
-    unsigned long int sizeBytes = 0;
+    bytes sizeBytes = 0;
 
     /* This character variable will store each character */
     int character,
             i = 0; /* Increment */
 
     /* Open the file in binary read mode and test it */
-    binaryFile = fopen("copy.bin", "rb");
+    binaryFile = OPENFILE;
 
-    if(binaryFile == NULL){
-        printf("Error when reading file\n");
-        system( "read -n 1 -s -p \"Press any key to continue...\"" );
-        exit(0);
-    } /* End if for binaryFile testing */
+    pointerTester((bin*) binaryFile);
 
-    /* Read the entire file incrementing sizeBytes */
-    while((character = fgetc(binaryFile)) != EOF){
-        sizeBytes++;
-    } /* End while */
+    /* A more elegant way to verify the file size, saving a lot of processing time */
 
-    /* TEST PURPOSE ONLY - To be removed - sizeBytes returns the file's size */
+    /* Using fseek() to point the binaryFile pointer to the end of the file */
+    fseek(binaryFile, 0, SEEK_END);
 
-    /* Returns the binPointer pointers to the file's beginning */
+    /* Then using ftell() to obtains the current position of binaryFile pointer and storing it into sizeBytes */
+    sizeBytes = ftell(binaryFile);
+
+    /* At last, returns the pointers to the file's beginning */
     rewind(binaryFile);
 
-    /* Stores all the content into a vector */
-
-    /* Dynamic Memory Allocation - numBytes * sizeof(char) to allocate a space that is
-    the amount of numBytes times the size of char (for portability )
+    /* Now we can store all the content from file into the binPointer pointer
+        - Dynamic Memory Allocation - sizeBytes * sizeof(char) to allocate a space that is
+    the amount of sizeBytes times the size of char (for portability)
     
-    The casting (unsigned char *) make it compatible for palloc */
-    binPointer = (unsigned char *) malloc(sizeBytes * sizeof(char));
+    Then casting (unsigned char *) to make it compatible for binPointer */
+    binPointer = (byte *) malloc(sizeBytes * sizeof(char));
 
     /* Test the memory allocation */
-    if (binPointer == NULL){
-        printf("Insufficient memory\n");
-        system( "read -n 1 -s -p \"Press any key to continue...\"" );
-        exit(0);
-    } /* End test allocation */
+    pointerTester((bin *) binPointer);
 
     /* Stores the content of file into the pointer */
 
@@ -66,7 +62,7 @@ int main(){
     while((character = fgetc(binaryFile)) != EOF){
         /* if i <= numByte keep storing the char into binPointer[i] */
         if(i <= sizeBytes){
-            binPointer[i] = (unsigned char) character;
+            binPointer[i] = (byte) character;
         } /* end if */
 
         i++;
@@ -75,18 +71,18 @@ int main(){
     /* Display the vector in the right format 00 to 09 then new line */
     printf("       00 01 02 03 04 05 06 07 08 09\n");
     printf("       -- -- -- -- -- -- -- -- -- --");
-    /* Print palloc vector char by char following the file's size */
-    for(i = 0; i < sizeBytes; i++){
-        /* Each 10 bytes inserts a new line and also show the current line */
-        if (i % 10 == 0){
-            putchar(0x0A); /* Inserts a new line */
-            printf("%.4X | ", i);
-        }
-        printf("%.2X", binPointer[i]);
-        putchar(0x20); /* Space in hex code -  to display data like 00 10 AB*/
-    } /* End for */
 
+    pointerPrint(sizeBytes, (bin *)binPointer);
+
+    /* Prints the file size (in bytes)*/
     printf("\nFile size: %lu bytes\n", sizeBytes);
-    /* Closes the file and free the pointer */
+
+    /* Closes the file and free allocated memory for binPointer */
+    fclose(binaryFile);
+    free(binPointer);
+
+    system( "read -n 1 -s -p \"Press any key to continue...\"" );
+
+    return 0;
 
 } /* End main*/
